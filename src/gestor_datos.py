@@ -2,6 +2,7 @@ import json
 import os
 
 
+# clase que se encarga de cargar las palabras desde un archivo json
 class GestorDatos:
     @staticmethod
     def cargar_palabras(nombre_archivo):
@@ -16,6 +17,7 @@ class GestorDatos:
             # aqui lanzamos una alerta pero el programa no "explota"
             print(f"⚠️ Error: No se encontró el archivo en {ruta}")
             return []
+            # si el archivo esta mal formado
         except json.JSONDecodeError:
             print(
                 f"⚠️ Error: El archivo {nombre_archivo}.json tiene un formato inválido"
