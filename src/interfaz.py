@@ -13,7 +13,7 @@ ctk.set_default_color_theme("blue")
 class Interfaz(ctk.CTk):
 
     # inicializa la interfaz grafica
-    def __init__(self, callback_adivinar, callback_inicio):
+    def __init__(self, callback_adivinar, callback_inicio,callback_pista):
         super().__init__()
         # titulo de la ventana
         self.title("Ahorcado POO - UNRC")
@@ -23,7 +23,7 @@ class Interfaz(ctk.CTk):
         # comunicacion con el motor del juego
         self.callback_adivinar = callback_adivinar
         self.callback_inicio = callback_inicio
-
+        self.callback_pista = callback_pista  
         # nombre del jugador en la pantalla
         self.nombre_jugador = None
 
@@ -177,6 +177,19 @@ class Interfaz(ctk.CTk):
         ctk.CTkButton(main_frame, text="Adivinar", command=self.enviar_letra).pack(
             pady=10
         )
+         # boton de pista 
+        self.btn_pista = ctk.CTkButton(
+            main_frame,
+            text="💡 Obtener Pista (-1 vida)",
+            command=self.callback_pista,
+            fg_color="#3498db",  # Color principal (Azulcyan)
+            hover_color="#2980b9",  # Color al pasar el mouse (Azul más oscuro)
+        )
+        self.btn_pista.pack(pady=20)
+
+        # Protección al jugador: Desactiva la pista si el jugador moriría al usarla
+        if intentos <= 1:
+            self.btn_pista.configure(state="disabled")
 
     # envia la letra al motor del juego
     def enviar_letra(self):

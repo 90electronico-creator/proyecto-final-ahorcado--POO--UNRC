@@ -10,7 +10,7 @@ class MotorJuego:
     def __init__(self):
         # conectamos las funciones del motor con la interfaz visual
         self.interfaz = Interfaz(
-            callback_adivinar=self.intentar_letra, callback_inicio=self.iniciar_partida
+            callback_adivinar=self.intentar_letra, callback_inicio=self.iniciar_partida, callback_pista=self.entregar_pista,
         )
         self.gestor = GestorDatos()
         self.jugador = None
@@ -42,8 +42,36 @@ class MotorJuego:
             if letra not in self.jugador.letras_usadas:
                 self.jugador.descontar_vida()
 
-        # registra el intento
+       # registra el intento
         self.jugador.registrar_intento(letra)
+
+        self.verificar_estado_juego()  
+
+    # Lógica para revelar una letra a cambio de una vida 
+    def entregar_pista(self):
+        # Obtenemos las letras únicas de la palabra secreta (ignorando espacios)
+        letras_secretas = set(self.palabra_obj.secreta.replace(" ", ""))
+
+        # Obtenemos las letras que ya se descubrieron
+        letras_descubiertas = set(self.palabra_obj.letras_adivinadas)
+
+        # La resta de conjuntos nos da las letras que faltan por adivinar
+        faltantes = list(letras_secretas - letras_descubiertas)
+
+        # Verificamos que falten letras y que tenga vidas suficientes para la pista
+        if faltantes and self.jugador.intentos_restantes > 1:
+            # Elegimos una letra al azar de las que faltan
+            letra_pista = random.choice(faltantes)
+
+            # Cobramos la vida, revelamos la letra y la registramos
+            self.jugador.descontar_vida()
+            self.palabra_obj.verificar_letra(letra_pista)
+            self.jugador.registrar_intento(letra_pista)
+
+            # Reevaluamos si ganó o perdió con esta nueva letra revelada
+            self.verificar_estado_juego()
+
+    # --- Fin de la funcion de pista --
 
         # Valida si ganó o perdió
         if not self.jugador.tiene_vidas() or self.palabra_obj.es_palabra_completa():
